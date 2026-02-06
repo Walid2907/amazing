@@ -1,0 +1,31 @@
+# ================================
+# Default configuration for A-Maze-ing
+# ================================
+
+# Maze dimensions
+WIDTH=20
+HEIGHT=20
+
+# Entry and exit points (x,y)
+ENTRY=0,3
+EXIT=19,14
+
+# Output file
+OUTPUT_FILE=maze.txt
+
+# Perfect maze (no loops, one unique path)
+PERFECT=True
+
+# ----------------
+# Optional settings
+# ----------------
+
+# Random seed for reproducibility
+SEED=42
+
+# Maze generation algorithm
+# Possible values: DFS, PRIM, KRUSKAL
+ALGORITHM=DFS
+
+# Display mode: ASCII or NONE
+DISPLAY=ASCII
