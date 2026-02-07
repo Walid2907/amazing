@@ -111,4 +111,4 @@ _lint-strict = "hard mode mypy check"_
 
 ---
 # <span class="color-purple">Config file</span> 
-The 
+read the config file 
