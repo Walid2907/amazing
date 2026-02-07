@@ -1,0 +1,5 @@
+/* Remove vertical line under the title/tab */
+.workspace-tab-header {
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
