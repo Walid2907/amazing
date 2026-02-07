@@ -4,6 +4,7 @@
 ---
 # Perfect maze generator Algorithm
 
+
 ---
 # Makefile
 
@@ -70,3 +71,24 @@ Then you can step through code (step...step), inspect variables, etc.
 
 **_Note:_**
 clean = "remove temporary python-generated junk files"
+
+### 5) `make lint`
+==The subject explicitly demands this command:==
+>Used to check the code style and format/show rules to be followed.
+
+It must run:
+```js
+flake8 .
+mypy . --warn-return-any --warn-unused-ignores --ignore-missing-imports \
+       --disallow-untyped-defs --check-untyped-defs=
+```
+
+### 6) `make lint-strict`
+Runs:
+```js
+flake8 .
+mypy . --strict
+```
+_lint-strict = "hard mode mypy check"_
+
+---
