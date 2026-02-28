@@ -1,9 +1,0 @@
-{
-  "interfaceFontFamily": "JetBrainsMono Nerd Font",
-  "baseFontSize": 17,
-  "textFontFamily": "JetBrainsMono Nerd Font",
-  "enabledCssSnippets": [
-    "colors",
-    "hide-tab-line"
-  ]
-}
