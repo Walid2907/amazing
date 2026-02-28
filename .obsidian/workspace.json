@@ -11,10 +11,14 @@
             "id": "4373806bc734273f",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "README.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "New tab"
+              "title": "README"
             }
           }
         ]
@@ -74,8 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200,
-    "collapsed": true
+    "width": 200
   },
   "right": {
     "id": "10424350b623bef2",
@@ -140,12 +143,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "FD.md",
+                "file": "README.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from FD"
+              "title": "Outgoing links from README"
             }
           }
         ],
@@ -170,7 +173,9 @@
   },
   "active": "4373806bc734273f",
   "lastOpenFiles": [
+    "World Of Mazes.md",
     "README.md",
+    "Untitled",
     "READMEtorem.md",
     "Linux/Text Processing Commands.md",
     "Linux/Service management.md",
@@ -208,11 +213,9 @@
     "Media/filedisc.png",
     "Media/GNL.png",
     "Media/Pasted image 20251117010451.png",
-    "Concepts/pointer to pointer.md",
     "publish.css",
     "publish.php",
     "Concepts",
-    "Project",
     "logo.png",
     "favicon-32x32.png",
     "Media/cyberpunk.png",

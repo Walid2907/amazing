@@ -3,29 +3,30 @@
 # ================================
 
 # Maze dimensions
-WIDTH=20
-HEIGHT=20
+WIDTH=20 hbhvkh
+HEIGHT=20 kbkjb]
+
 
 # Entry and exit points (x,y)
-ENTRY=0,3
-EXIT=19,14
+ENTRY=0,3 bblj
+EXIT=19,14 buubuolb
 
 # Output file
-OUTPUT_FILE=maze.txt
+OUTPUT_FILE=maze.txt blbjlb
 
 # Perfect maze (no loops, one unique path)
-PERFECT=True
+PERFECT=True bjljblj
 
 # ----------------
 # Optional settings
 # ----------------
 
 # Random seed for reproducibility
-SEED=42
+SEED=42 bljbljbl
 
 # Maze generation algorithm
 # Possible values: DFS, PRIM, KRUSKAL
-ALGORITHM=DFS
+ALGORITHM=DFS bljbljb
 
 # Display mode: ASCII or NONE
-DISPLAY=ASCII
+DISPLAY=ASCII bjjlbl
