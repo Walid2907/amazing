@@ -112,3 +112,8 @@ _lint-strict = "hard mode mypy check"_
 ---
 # <span class="color-purple">Config file</span> 
 the config file must be well structured
+
+
+```pyhton
+
+```
