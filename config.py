@@ -58,8 +58,7 @@ def parse_config(file_name: str) -> Config:
 
                 if "=" not in line:
                     raise ConfigError(f"Line {line_num}: missing '='")
-                cleanline, trash = line.split(" ", 1)
-                key, value = cleanline.split("=", 1)
+                key, value = line.split("=", 1)
                 confs[key.lower().strip()] = value.strip()
     except FileNotFoundError:
         raise ConfigError(f"Config file not found: {file_name}")

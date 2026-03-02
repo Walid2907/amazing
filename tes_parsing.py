@@ -1,9 +1,9 @@
 from config import parse_config
 
 config = parse_config("config.txt")
-print("The width: ",config.width)
-print("The height: ", config.height)
-print("The entry is: ", config.entry)
+print(f"{config.width}")
+print("The height:", config.height)
+print("The entry is:", config.entry)
 # width: int
 #     height: int
 #     entry: Tuple[int, int]
