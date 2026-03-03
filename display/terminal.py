@@ -1,6 +1,8 @@
 from typing import List, Optional, Any
 from dataclasses import dataclass
 import random
+import os
+import time
 
 """
 Maze visualizer for the A-Maze-ing 42 project.
@@ -13,6 +15,7 @@ class additional:
     path_check: bool
     color_check: bool
     color_42_check: bool
+    animation_check: bool
 
 
 # --- Direction constants ---
@@ -115,6 +118,7 @@ def print_ascii_maze(
     
     color = random.choice(colors) if add_vars.color_check else WHITE_CODE
     color_42 = random.choice(colors) if add_vars.color_42_check else WHITE_CODE
+    os.system('cls' if os.name == 'nt' else 'clear')
 
     for r in range(height):
         # Top edge of row
@@ -130,7 +134,8 @@ def print_ascii_maze(
         top += _get_join(n, False, s, w)
         
         print(color + top)
-
+        if add_vars.animation_check:
+            time.sleep(0.05)
         # Middle of row
         mid = ""
         for c in range(width):
@@ -144,6 +149,8 @@ def print_ascii_maze(
                 
         mid += "┃" if has_v_wall(grid, r, width - 1, EAST) else " "
         print(mid)
+        if add_vars.animation_check:
+            time.sleep(0.05)
 
     # Bottom edge of the maze
     bottom = ""

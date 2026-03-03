@@ -3,8 +3,8 @@
 # ================================
 
 # Maze dimensions
-WIDTH=15
-HEIGHT=10
+WIDTH=25
+HEIGHT=20
 
 
 # Entry and exit points (x,y)

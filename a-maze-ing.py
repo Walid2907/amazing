@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from config import parse_config, ConfigError, set_42_limits
 from algorithms.prim import generate_maze
 from display.terminal import print_ascii_maze, additional
-from algorithms.path_finder.bfs import bfs
+from algorithms.bfs import bfs
 
 
 def path_to_cells(start: tuple[int, int],solution: list[str]
@@ -45,7 +45,7 @@ if __name__ == "__main__":
         PERFECT = config.perfect
         SEED = config.seed
         output_file = config.output_file
-        add_vars = additional(False, False, False)
+        add_vars = additional(False, False, False, False)
         maze = generate_maze(WIDTH, HEIGHT, SEED, PERFECT)
         safe = set_42_limits(WIDTH, HEIGHT)
         solution = bfs(maze, ENTRY, EXIT)
@@ -55,8 +55,10 @@ if __name__ == "__main__":
             print("\n=== Main Menu ===")
             print("1. Re-generate a new maze")
             print("2. Show/Hide path from entry to exit")
-            print("3. Change maze color")
-            print("4. Quit")
+            print("3. animate the maze")
+            print("4. animate path")
+            print("5. Change maze color")
+            print("6. Quit")
 
             try:
                 choice = input("Enter your choice (1-3): ").strip()
@@ -75,10 +77,13 @@ if __name__ == "__main__":
                 add_vars.path_check = not add_vars.path_check
                 print_ascii_maze(maze, safe, add_vars, path)
             elif choice == "3":
+                add_vars.animation_check = not add_vars.animation_check
+                print_ascii_maze(maze, safe, add_vars, path)
+            elif choice == "4":
                 add_vars.color_check = True
                 add_vars.color_42_check = True
                 print_ascii_maze(maze, safe, add_vars, path)
-            elif choice == "4":
+            elif choice == "5":
                 print("Goodbye!") # let me do this.
                 break
             else:
