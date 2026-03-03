@@ -7,12 +7,7 @@ from display.terminal import print_ascii_maze, additional
 from algorithms.path_finder.bfs import bfs
 
 
-
-
-
-def path_to_cells(
-    start: tuple[int, int],
-    solution: list[str]
+def path_to_cells(start: tuple[int, int],solution: list[str]
 ) -> list[tuple[int, int]]:
     """
     Convert a start position and list of direction letters to a list of cells.
@@ -61,8 +56,7 @@ if __name__ == "__main__":
             print("1. Re-generate a new maze")
             print("2. Show/Hide path from entry to exit")
             print("3. Change maze color")
-            print("4. 42 color change")
-            print("5. Quit")
+            print("4. Quit")
 
             try:
                 choice = input("Enter your choice (1-3): ").strip()
@@ -84,12 +78,10 @@ if __name__ == "__main__":
                 add_vars.color_check = True
                 add_vars.color_42_check = True
                 print_ascii_maze(maze, safe, add_vars, path)
-            elif choice == "5":
+            elif choice == "4":
                 print("Goodbye!") # let me do this.
                 break
             else:
                 print("Invalid choice. Try again.")
-
-
     except Exception as e:
         print(e)

@@ -16,7 +16,6 @@ class additional:
 
 
 # --- Direction constants ---
-
 NORTH = 0  # bit 0 → value 1
 EAST  = 1  # bit 1 → value 2
 SOUTH = 2  # bit 2 → value 4
@@ -36,6 +35,69 @@ colors = [RED_CODE, GREEN_CODE, BLUE_CODE, YELLOW_CODE, WHITE_CODE, MAGENTA_CODE
 WALL_BITS = {NORTH: 1, EAST: 2, SOUTH: 4, WEST: 8}
 
 
+def _get_join(n: bool, e: bool, s: bool, w: bool) -> str:
+    """Returns the appropriate Unicode box-drawing character for a corner."""
+    if n and e and s and w: return "╋"
+    if n and e and w: return "┻"
+    if s and e and w: return "┳"
+    if s and n and w: return "┫"
+    if s and n and e: return "┣"
+    if w and s: return "┓"
+    if s and e: return "┏"
+    if e and n: return "┗"
+    if n and w: return "┛"
+    if n or s: return "┃"
+    if w or e: return "━"
+    return " "
+
+
+def has_h_wall(grid: list[list[int]], r: int, c: int, direction: int) -> bool:
+    """Helper to safely check for a horizontal wall."""
+    height = len(grid)
+    width = len(grid[0]) if height > 0 else 0
+    if r < 0 or r >= height or c < 0 or c >= width:
+        # Check opposite wall of adjacent cell if out of bounds (exterior walls)
+        if r == height and direction == NORTH:
+            return bool(grid[r-1][c] & WALL_BITS[SOUTH])
+        if r == -1 and direction == SOUTH:
+            return bool(grid[0][c] & WALL_BITS[NORTH])
+        return False
+    return bool(grid[r][c] & WALL_BITS[direction])
+
+
+def has_v_wall(grid: list[list[int]], r: int, c: int, direction: int) -> bool:
+    """Helper to safely check for a vertical wall."""
+    height = len(grid)
+    width = len(grid[0]) if height > 0 else 0
+    if r < 0 or r >= height or c < 0 or c >= width:
+        if c == width and direction == WEST:
+            return bool(grid[r][c-1] & WALL_BITS[EAST])
+        if c == -1 and direction == EAST:
+            return bool(grid[r][0] & WALL_BITS[WEST])
+        return False
+    return bool(grid[r][c] & WALL_BITS[direction])
+
+
+def get_corner(grid: list[list[int]], r: int, c: int) -> str:
+    """
+    Determine the four wall segments meeting at the intersection 
+    (top-left corner of cell (r, c)).
+    """
+    n = has_v_wall(grid, r - 1, c, WEST)  # vertical wall above
+    s = has_v_wall(grid, r, c, WEST)      # vertical wall below
+    e = has_h_wall(grid, r, c, NORTH)     # horizontal wall right
+    w = has_h_wall(grid, r, c - 1, NORTH) # horizontal wall left
+    return _get_join(n, e, s, w)
+
+
+def get_bottom_corner(grid: list[list[int]], r: int, c: int) -> str:
+    """Corner for the very bottom edge of the grid."""
+    n = has_v_wall(grid, r, c, WEST)      # vertical wall above
+    s = False                             # no wall below bottom edge
+    e = has_h_wall(grid, r, c, SOUTH)     # horizontal wall right
+    w = has_h_wall(grid, r, c - 1, SOUTH) # horizontal wall left
+    return _get_join(n, e, s, w)
+
 
 def print_ascii_maze(
     grid: list[list[int]],
@@ -44,48 +106,54 @@ def print_ascii_maze(
     path: Optional[list[tuple[int, int]]] = None
 ) -> None:
     """
-    Print a simple ASCII representation of the maze to the terminal.
-    Uses '+', '-', '|' and spaces.
+    Print an ASCII representation of the maze to the terminal.
+    Uses Unicode double-line characters to smoothly connect corners.
     """
     height = len(grid)
     width = len(grid[0]) if height > 0 else 0
     path_set = set(path) if path else set()
-    if add_vars.color_check:
-        color = random.choice(colors)
-    else:
-        color = WHITE_CODE
-
-    if add_vars.color_42_check:
-        color_42 = random.choice(colors)
-    else:
-        color_42 = WHITE_CODE
+    
+    color = random.choice(colors) if add_vars.color_check else WHITE_CODE
+    color_42 = random.choice(colors) if add_vars.color_42_check else WHITE_CODE
 
     for r in range(height):
         # Top edge of row
         top = ""
         for c in range(width):
-            top += "+"
-            top += "--" if (grid[r][c] & WALL_BITS[NORTH]) else "  "
-        top += "+"
+            top += get_corner(grid, r, c)
+            top += "━━" if has_h_wall(grid, r, c, NORTH) else "  "
+            
+        # Top-rightmost corner of the row
+        n = has_v_wall(grid, r - 1, width - 1, EAST)
+        s = has_v_wall(grid, r, width - 1, EAST)
+        w = has_h_wall(grid, r, width - 1, NORTH)
+        top += _get_join(n, False, s, w)
+        
         print(color + top)
 
         # Middle of row
         mid = ""
         for c in range(width):
-            mid += "|" if (grid[r][c] & WALL_BITS[WEST]) else " "
+            mid += "┃" if has_v_wall(grid, r, c, WEST) else " "
             if (r, c) in path_set and add_vars.path_check:
                 mid += "🐧"       # path marker, 2 chars wide
             elif (r, c) in safe:
                 mid += color_42 + "██" + color       # safe zone, 2 chars wide
             else:
                 mid += "  "       # empty cell, 2 chars wide
-        mid += "|" if (grid[r][width - 1] & WALL_BITS[EAST]) else " "
+                
+        mid += "┃" if has_v_wall(grid, r, width - 1, EAST) else " "
         print(mid)
 
-    # Bottom edge
+    # Bottom edge of the maze
     bottom = ""
     for c in range(width):
-        bottom += "+"
-        bottom += "--" if (grid[height - 1][c] & WALL_BITS[SOUTH]) else "  "
-    bottom += "+"
+        bottom += get_bottom_corner(grid, height - 1, c)
+        bottom += "━━" if has_h_wall(grid, height - 1, c, SOUTH) else "  "
+        
+    # Bottom-rightmost corner
+    n = has_v_wall(grid, height - 1, width - 1, EAST)
+    w = has_h_wall(grid, height - 1, width - 1, SOUTH)
+    bottom += _get_join(n, False, False, w)
+    
     print(bottom + RESET_CODE)
