@@ -3,13 +3,13 @@
 # ================================
 
 # Maze dimensions
-WIDTH=20
-HEIGHT=20
+WIDTH=15
+HEIGHT=10
 
 
 # Entry and exit points (x,y)
 ENTRY=0,3
-EXIT=19,14
+EXIT=0,0
 
 # Output file
 OUTPUT_FILE=maze.txt
