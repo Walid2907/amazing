@@ -8,8 +8,8 @@ HEIGHT=10
 
 
 # Entry and exit points (x,y)
-ENTRY=0,3
-EXIT=0,0
+ENTRY=0,0
+EXIT=13,7
 
 # Output file
 OUTPUT_FILE=maze.txt
