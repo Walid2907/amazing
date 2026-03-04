@@ -4,33 +4,25 @@
 # ==========================
 
 PYTHON = python3
-MAIN = a-maze-ing.py
-VENV = venv
-PIP = $(VENV)/bin/pip
-PY = $(VENV)/bin/python
-
+MAIN = a_maze_ing.py
 # Default target
 all: run
 
-# Create virtual environment
-venv:
-	$(PYTHON) -m venv $(VENV)
-
-# Install dependencies
-install: venv
-	$(PIP) install -r requirements.txt
+CONFIG ?= $(shell find . -maxdepth 1 -name "*.txt" ! -name "output_maze.txt" | head -1)
+CONFIG := $(if $(CONFIG),$(CONFIG),config.txt)
 
 # Run the project
 run:
-	$(PYTHON) $(MAIN)
+	@if [ -z "$(CONFIG)" ]; then \
+		echo "Error: No config .txt file found."; \
+	fi
+	python3 $(MAIN) $(CONFIG)
 
-# Run using virtual environment python
-run-venv: venv
-	$(PY) $(MAIN)
-
-# Format code (requires black)
-format:
-	$(PYTHON) -m black .
+debug:
+	@if [ -z "$(CONFIG)" ]; then \
+		echo "Error: No config .txt file found."; \
+	fi
+	python3 -m pdb a_maze_ing.py $(CONFIG)
 
 # Lint code (requires flake8)
 lint:
@@ -41,11 +33,7 @@ clean:
 	find . -type d -name "__pycache__" -exec rm -r {} +
 	find . -type f -name "*.pyc" -delete
 
-# Remove virtual environment
-fclean: clean
-	rm -rf $(VENV)
-
 # Rebuild everything
-re: fclean install
+re: clean
 
-.PHONY: all venv install run run-venv format lint clean fclean re
+.PHONY: all run lint clean re
