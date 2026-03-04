@@ -69,13 +69,13 @@ def generate_maze(
 
     def remove_wall(r1: int, c1: int, direction: int) -> None:
         """
-        Remove the wall between cell (r1, c1) and its neighbour in `direction`.
+        Remove the wall between cell (r1, c1) and its neighbor in `direction`.
         Updates both cells to keep wall data coherent (subject rule).
         """
         dr, dc = CHANGES[direction]
         r2, c2 = r1 + dr, c1 + dc
 
-        if (r2, c2) in form_42:  #i added this check to ensure that the 42 pathern never being touch
+        if (r2, c2) in form_42 or (r1, c2) in form_42:
             return
 
         grid[r1][c1] &= ~WALL_BITS[direction]
@@ -83,14 +83,14 @@ def generate_maze(
 
     # --- Prim's Algorithm ---
     start_r = rng.randint(0, height - 1)
-    start_c = rng.randint(0, width - 1)
+    start_c = 0
     visited[start_r][start_c] = True
 
     # Add all walls of the starting cell to the frontier
     frontier: list[tuple[int, int, int]] = []
     for direction, (dr, dc) in CHANGES.items():
         nr, nc = start_r + dr, start_c + dc
-        if in_bounds(nr, nc):
+        if in_bounds(nr, nc) and (nr, nc) not in form_42:
             frontier.append((start_r, start_c, direction))
 
     # Process frontier walls
@@ -107,7 +107,7 @@ def generate_maze(
 
             for new_direction, (ddr, ddc) in CHANGES.items():
                 nr, nc = r2 + ddr, c2 + ddc
-                if in_bounds(nr, nc) and not visited[nr][nc]:
+                if in_bounds(nr, nc) and not visited[nr][nc] and (nr, nc) not in form_42:
                     frontier.append((r2, c2, new_direction))
 
     # Optionally carve extra passages to create loops
@@ -131,25 +131,32 @@ def random_opens(
     and reclose the 42 pattern after the random opens.
     """
 
-    def enforce_42(grid_: list[list[int]],
-                   form_42_: list[tuple[int, int]]) -> None:
-        """Restore walls for the 42 pattern."""
+    def enforce_42 (grid_: list[list[int]],
+                    form_42_: list[tuple[int, int]],
+                    width: int,
+                    height: int) -> None:
+        """Restore walls for the 42 pattern and seal neighbors facing into it."""
+
+        # Step 1: fully wall every 42 cell
         for rw, coll in form_42_:
             grid_[rw][coll] |= 0xF
 
+        # Step 2: close the wall on each neighbor that faces a 42 cell
         for row, coll in form_42_:
-            north_r, north_c = row - 1, coll
-            east_r, east_c = row, coll + 1
-            south_r, south_c = row + 1, coll
-            west_r, west_c = row, coll - 1
-
             neighbors = [
-                (north_r, north_c, NORTH),
-                (east_r, east_c, EAST),
-                (south_r, south_c, SOUTH),
-                (west_r, west_c, WEST),
+                (row - 1, coll, NORTH),  # neighbor to the north looks SOUTH into 42
+                (row, coll + 1, EAST),  # neighbor to the east  looks WEST  into 42
+                (row + 1, coll, SOUTH),  # neighbor to the south looks NORTH into 42
+                (row, coll - 1, WEST),  # neighbor to the west  looks EAST  into 42
             ]
             for nr, nc, direction in neighbors:
+                # bounds check: skip if neighbor is outside the grid
+                if not (0 <= nr < height and 0 <= nc < width):
+                    continue
+                # skip if the neighbor is itself a 42 cell (already handled above)
+                if (nr, nc) in form_42_:
+                    continue
+                # close the wall on the neighbor's side that faces the 42 cell
                 grid_[nr][nc] |= WALL_BITS[OPPOSITE[direction]]
 
     for r in range(height):
@@ -166,4 +173,4 @@ def random_opens(
                     grid[r][c] &= ~WALL_BITS[SOUTH]
                     grid[r + 1][c] &= ~WALL_BITS[NORTH]
 
-    enforce_42(grid, form_42)
+    enforce_42(grid, form_42, width, height)

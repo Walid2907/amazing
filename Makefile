@@ -8,7 +8,7 @@ MAIN = a_maze_ing.py
 # Default target
 all: run
 
-CONFIG ?= $(shell find . -maxdepth 1 -name "*.txt" ! -name "output_maze.txt" | head -1)
+CONFIG ?= $(shell find . -maxdepth 1 -name "*.txt" ! -name "maze.txt" | head -1)
 CONFIG := $(if $(CONFIG),$(CONFIG),config.txt)
 
 # Run the project
@@ -37,3 +37,4 @@ clean:
 re: clean
 
 .PHONY: all run lint clean re
+

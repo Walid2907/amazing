@@ -40,7 +40,6 @@ if __name__ == "__main__":
             print("5. Change maze color")
             print("6. Quit")
 
-
             try:
                 choice = input("Enter your choice (1-6): ").strip()
             except BaseException:
@@ -48,10 +47,11 @@ if __name__ == "__main__":
                 exit(0)
 
             if choice == "1":
+                SEED = random.randrange(2**32)
                 print("Maze re-generation started...")
-                maze = generate_maze(WIDTH, HEIGHT, None, PERFECT)  # I changed the random seed to just non because prim handle non seed
+                maze = generate_maze(WIDTH, HEIGHT, SEED, PERFECT)
                 solution = bfs(maze, ENTRY, EXIT)
-                path = path_to_cells(ENTRY, solution)   # why you removed the generator of the output file idiot
+                path = path_to_cells(ENTRY, solution)
                 print_ascii_maze(maze, safe, add_vars, path)
             elif choice == "2":
                 add_vars.path_check = not add_vars.path_check
