@@ -29,7 +29,7 @@ if __name__ == "__main__":
         solution = bfs(maze, ENTRY, EXIT)
         # convert the solution from string to cords
         path = path_to_cells(ENTRY, solution)
-        print_ascii_maze(maze, safe, add_vars, config, path)
+        print_ascii_maze(maze, safe, add_vars, path)
         while True:
             print("\n=== Main Menu ===")
             print("1. Re-generate a new maze")
@@ -50,20 +50,20 @@ if __name__ == "__main__":
                 maze = generate_maze(WIDTH, HEIGHT, None, PERFECT)
                 solution = bfs(maze, ENTRY, EXIT)
                 path = path_to_cells(ENTRY, solution)
-                print_ascii_maze(maze, safe, add_vars, config, path)
+                print_ascii_maze(maze, safe, add_vars, path)
             elif choice == "2":
                 add_vars.path_check = not add_vars.path_check
-                print_ascii_maze(maze, safe, add_vars, config, path)
+                print_ascii_maze(maze, safe, add_vars, path)
             elif choice == "3":
                 add_vars.animation_check = not add_vars.animation_check
-                print_ascii_maze(maze, safe, add_vars, config, path)
+                print_ascii_maze(maze, safe, add_vars, path)
             elif choice == "4":
                 add_vars.path_check = False
                 animate_path_walk(maze, safe, add_vars, path, delay=0.1)
             elif choice == "5":
                 add_vars.color_check = True
                 add_vars.color_42_check = True
-                print_ascii_maze(maze, safe, add_vars, config, path)
+                print_ascii_maze(maze, safe, add_vars, path)
             elif choice == "6":
                 print("Goodbye!")
                 break
