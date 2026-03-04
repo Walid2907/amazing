@@ -40,6 +40,7 @@ if __name__ == "__main__":
             print("5. Change maze color")
             print("6. Quit")
 
+
             try:
                 choice = input("Enter your choice (1-6): ").strip()
             except BaseException:
