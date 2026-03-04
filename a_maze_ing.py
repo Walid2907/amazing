@@ -1,9 +1,8 @@
 import sys
 import random
 from config import parse_config, ConfigError, set_42_limits
-from algorithms.prim import generate_maze
-from display.terminal import print_ascii_maze, ADDI, animate_path_walk
-from algorithms.bfs import bfs, path_to_cells
+from algorithms import generate_maze, bfs, path_to_cells
+from display import print_ascii_maze, ADDI, animate_path_walk
 
 
 if __name__ == "__main__":
@@ -30,7 +29,7 @@ if __name__ == "__main__":
         solution = bfs(maze, ENTRY, EXIT)
         # convert the solution from string to cords
         path = path_to_cells(ENTRY, solution)
-        print_ascii_maze(maze, safe, add_vars, path)
+        print_ascii_maze(maze, safe, add_vars, config, path)
         while True:
             print("\n=== Main Menu ===")
             print("1. Re-generate a new maze")
@@ -47,25 +46,24 @@ if __name__ == "__main__":
                 exit(0)
 
             if choice == "1":
-                SEED = random.randrange(2**32)
                 print("Maze re-generation started...")
-                maze = generate_maze(WIDTH, HEIGHT, SEED, PERFECT)
+                maze = generate_maze(WIDTH, HEIGHT, None, PERFECT)
                 solution = bfs(maze, ENTRY, EXIT)
                 path = path_to_cells(ENTRY, solution)
-                print_ascii_maze(maze, safe, add_vars, path)
+                print_ascii_maze(maze, safe, add_vars, config, path)
             elif choice == "2":
                 add_vars.path_check = not add_vars.path_check
-                print_ascii_maze(maze, safe, add_vars, path)
+                print_ascii_maze(maze, safe, add_vars, config, path)
             elif choice == "3":
                 add_vars.animation_check = not add_vars.animation_check
-                print_ascii_maze(maze, safe, add_vars, path)
+                print_ascii_maze(maze, safe, add_vars, config, path)
             elif choice == "4":
                 add_vars.path_check = False
                 animate_path_walk(maze, safe, add_vars, path, delay=0.1)
             elif choice == "5":
                 add_vars.color_check = True
                 add_vars.color_42_check = True
-                print_ascii_maze(maze, safe, add_vars, path)
+                print_ascii_maze(maze, safe, add_vars, config, path)
             elif choice == "6":
                 print("Goodbye!")
                 break

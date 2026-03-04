@@ -3,6 +3,7 @@ from dataclasses import dataclass
 import random
 import os
 import time
+from ..config import Config
 
 """
 Maze visualizer for the A-Maze-ing 42 project.
@@ -120,10 +121,13 @@ def get_bottom_corner(grid: list[list[int]], r: int, c: int) -> str:
 
 def print_ascii_maze(grid: list[list[int]], safe: list[tuple[int, int]],
                      add_vars: ADDI,
+                     conf: Config,
                      path: Optional[list[tuple[int, int]]] = None) -> None:
     """
     Print an ASCII representation of the maze to the terminal.
     """
+    entry = conf.entry
+    exit_ = conf.exit_
     height = len(grid)
     width = len(grid[0]) if height > 0 else 0
     path_set = set(path) if path else set()
@@ -154,6 +158,10 @@ def print_ascii_maze(grid: list[list[int]], safe: list[tuple[int, int]],
             mid += "┃" if vert_wall(grid, r, c, WEST) else " "
             if (r, c) in path_set and add_vars.path_check:
                 mid += "🐧"       # path marker, 2 chars wide
+            elif (r, c) == entry:
+                mid += GREEN_CODE + "██" + color
+            elif (r, c) == exit_:
+                mid += RED_CODE + "██" + color
             elif (r, c) in safe:
                 mid += color_42 + "██" + color       # safe zone, 2 chars wide
             else:
@@ -197,7 +205,7 @@ def animate_path_walk(
 
     # Draw the initial maze (no path)
     add_vars.path_check = False
-    print_ascii_maze(grid, safe, add_vars, [])
+    print_ascii_maze(grid, safe, add_vars, config, [])
 
     # ANSI helpers
     def move_up(n: int):
