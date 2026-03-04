@@ -75,7 +75,7 @@ def generate_maze(
         dr, dc = CHANGES[direction]
         r2, c2 = r1 + dr, c1 + dc
 
-        if (r2, c2) in form_42:
+        if (r2, c2) in form_42:  #i added this check to ensure that the 42 pathern never being touch
             return
 
         grid[r1][c1] &= ~WALL_BITS[direction]
