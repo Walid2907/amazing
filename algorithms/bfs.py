@@ -1,6 +1,7 @@
 from collections import deque
 from typing import Optional
 
+
 # Wall bit masks
 NORTH = 1  # bit 0
 EAST = 2  # bit 1
@@ -35,7 +36,7 @@ def bfs(
         shortest path, or None if no path exists.
     """
     # swap x,y into y,x because i used the algo this way row, coll
-    t = start 
+    t = start
     start = (t[1], t[0])
     t = end
     end = (t[1], t[0])
@@ -69,3 +70,25 @@ def bfs(
             queue.append((nr, nc, path + [letter]))
 
     return None  # no path found
+
+
+def path_to_cells(start: tuple[int, int],
+                  solution: list[str]) -> list[tuple[int, int]]:
+    """
+    Convert a start position and list of direction letters to a list of cells.
+
+    Args:
+        start:      (row, col) starting cell.
+        solution: List of 'N', 'E', 'S', 'W' moves.
+
+    Returns:
+        Ordered list of (row, col) cells including start and end.
+    """
+    cords = {'N': (-1, 0), 'E': (0, 1), 'S': (1, 0), 'W': (0, -1)}
+    cells: list[tuple[int, int]] = [start]
+    r, c = start
+    for d in solution:
+        dr, dc = cords[d]
+        r, c = r + dr, c + dc
+        cells.append((r, c))
+    return cells

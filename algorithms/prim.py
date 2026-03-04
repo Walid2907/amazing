@@ -97,7 +97,8 @@ def generate_maze(
         dr, dc = CHANGES[direction]
         r2, c2 = r1 + dr, c1 + dc
 
-        if in_bounds(r2, c2) and not visited[r2][c2] and (r2, c2) not in form_42:
+        if (in_bounds(r2, c2) and not visited[r2][c2]
+                and (r2, c2) not in form_42):
             remove_wall(r1, c1, direction)
             visited[r2][c2] = True
 
@@ -127,7 +128,8 @@ def random_opens(
     and reclose the 42 pattern after the random opens.
     """
 
-    def enforce_42(grid_: list[list[int]], form_42_: list[tuple[int, int]]) -> None:
+    def enforce_42(grid_: list[list[int]],
+                   form_42_: list[tuple[int, int]]) -> None:
         """Restore walls for the 42 pattern."""
         for rw, coll in form_42_:
             grid_[rw][coll] |= 0xF
