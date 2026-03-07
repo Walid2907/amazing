@@ -4,18 +4,18 @@
 
 # Maze dimensions
 WIDTH=15
-HEIGHT=10
+HEIGHT=13
 
 
 # Entry and exit points (x,y)
 ENTRY=0,0
-EXIT=14,9
+EXIT=12,12
 
 # Output file
 OUTPUT_FILE=maze.txt
 
-# Perfect maze (no loops, one unique path)
-PERFECT=False
+# Perfect maze
+PERFECT=True
 
 # ----------------
 # Optional settings

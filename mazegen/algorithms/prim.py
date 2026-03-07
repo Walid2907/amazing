@@ -44,7 +44,7 @@ def set_42_limits(width: int, height: int) -> list[tuple[int, int]]:
     return form_42
 
 
-def generate_maze(
+def PRIM(
     width: int,
     height: int,
     seed: Optional[int] = None,
