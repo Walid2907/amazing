@@ -205,15 +205,15 @@ def animate_path_walk(
     # special characters that help move the cursor in the terminal
     # without printing anything
 
-    def move_up(n: int):
+    def move_up(n: int) -> None:
         # move the cursor up n lines
         print(f"\033[{n}A", end="")
 
-    def move_to_col(n: int):
+    def move_to_col(n: int) -> None:
         print(f"\033[{n}G", end="")
 
     def overwrite_cell(r: int, c: int, symbol: str,
-                       color: str = WHITE_CODE):
+                       color: str = WHITE_CODE) -> None:
         """
         Jump to the exact terminal position of cell (r,c)
         and overwrite its content.

@@ -4,6 +4,7 @@ from config import parse_config, ConfigError, set_42_limits
 from mazegen import MazeGenerator, bfs
 from display import print_ascii_maze, ADDI, animate_path_walk
 
+
 def organize_output_file(
     grid: list[list[int]],
     output_file: str,
@@ -16,10 +17,10 @@ def organize_output_file(
             print("1. to overwrite the content of the file")
             print("2. to cancel the process")
             try:
-                choice = input(f"The file '{output_file}' already exists. Choose an option: ").strip()
+                choice = input(f"The file '{output_file}' already exists. "
+                               f"Choose an option: ").strip()
             except BaseException:
                 print("\nDetected Key Interruption Exiting gracefully...")
-            
             if choice == '1':
                 break
             elif choice == '2':
@@ -41,14 +42,16 @@ def organize_output_file(
             file.write(f"\n{entry[0]},{entry[1]}\n")
             file.write(f"{exit_[0]},{exit_[1]}\n")
             file.write(path)
-            
+
     except PermissionError:
-        print(f"Error: You don't have permission to write to {output_file}")
+        print(f"You don't have permission to write to {output_file}")
     except IsADirectoryError:
-        print(f"Error: {output_file} is a directory.")
+        print(f"{output_file} is a directory.")
     except OSError as e:
-        print(f"Error: An unexpected operating system error occurred while writing to {output_file}: {e}")
+        print(f"An unexpected operating system error occurred "
+              f"while writing to {output_file}: {e}")
     return True
+
 
 def main() -> None:
     # check if the arguments are right
@@ -68,7 +71,7 @@ def main() -> None:
         perfect = config.perfect
         seed = config.seed
         output_file = config.output_file
-        algo = config.algorithm
+        algo = config.algorithm if config.algorithm is not None else "PRIM"
         # assign the needed additional vars
         add_vars = ADDI(False, False, False, False)
         safe = set_42_limits(width, height)
@@ -77,9 +80,13 @@ def main() -> None:
         # generate the maze and solve it
         maze = generator.generate()
         path_out_list = bfs(maze, entry, exit_)
+        if path_out_list is None:
+            print("no path found")
+            sys.exit(0)
         path = generator.solve(entry, exit_)
         # write to output file
-        if organize_output_file(maze, output_file, "".join(path_out_list), entry, exit_) == False:
+        if organize_output_file(maze, output_file, "".join(path_out_list),
+                                entry, exit_) is False:
             sys.exit(0)
         # print the maze
         print_ascii_maze(maze, safe, add_vars, config, path)
