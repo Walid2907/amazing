@@ -44,7 +44,7 @@ def set_42_limits(width: int, height: int) -> list[tuple[int, int]]:
     return form_42
 
 
-def PRIM(
+def prim(
     width: int,
     height: int,
     seed: Optional[int] = None,
@@ -107,7 +107,8 @@ def PRIM(
 
             for new_direction, (ddr, ddc) in CHANGES.items():
                 nr, nc = r2 + ddr, c2 + ddc
-                if in_bounds(nr, nc) and not visited[nr][nc] and (nr, nc) not in form_42:
+                if (in_bounds(nr, nc) and not visited[nr][nc]
+                        and (nr, nc) not in form_42):
                     frontier.append((r2, c2, new_direction))
 
     # Optionally carve extra passages to create loops
@@ -131,29 +132,34 @@ def random_opens(
     and reclose the 42 pattern after the random opens.
     """
 
-    def enforce_42 (grid_: list[list[int]],
-                    form_42_: list[tuple[int, int]],
-                    width: int,
-                    height: int) -> None:
-        """Restore walls for the 42 pattern and seal neighbors facing into it."""
+    def enforce_42(grid_: list[list[int]],
+                   form_42_: list[tuple[int, int]],
+                   width: int, height: int) -> None:
+        """Restore walls for the 42 pattern and
+        seal neighbors facing into it."""
 
         # Step 1: fully wall every 42 cell
         for rw, coll in form_42_:
             grid_[rw][coll] |= 0xF
 
-        # Step 2: close the wall on each neighbor that faces a 42 cell
+        # Step 2: close the wall on
+        # each neighbor that faces a 42 cell
         for row, coll in form_42_:
             neighbors = [
-                (row - 1, coll, NORTH),  # neighbor to the north looks SOUTH into 42
-                (row, coll + 1, EAST),  # neighbor to the east  looks WEST  into 42
-                (row + 1, coll, SOUTH),  # neighbor to the south looks NORTH into 42
-                (row, coll - 1, WEST),  # neighbor to the west  looks EAST  into 42
+                (row - 1, coll, NORTH),
+                # neighbor to the north looks SOUTH into 42
+                (row, coll + 1, EAST),
+                # neighbor to the east  looks WEST  into 42
+                (row + 1, coll, SOUTH),
+                # neighbor to the south looks NORTH into 42
+                (row, coll - 1, WEST),
+                # neighbor to the west  looks EAST  into 42
             ]
             for nr, nc, direction in neighbors:
                 # bounds check: skip if neighbor is outside the grid
                 if not (0 <= nr < height and 0 <= nc < width):
                     continue
-                # skip if the neighbor is itself a 42 cell (already handled above)
+                # skip if the neighbor is itself a 42 cell
                 if (nr, nc) in form_42_:
                     continue
                 # close the wall on the neighbor's side that faces the 42 cell

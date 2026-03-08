@@ -1,11 +1,11 @@
 import sys
-import random
 from config import parse_config, ConfigError, set_42_limits
-from mazegen import PRIM, bfs, path_to_cells, DFS
+from mazegen import MazeGenerator
 from display import print_ascii_maze, ADDI, animate_path_walk
 
 
-if __name__ == "__main__":
+def main() -> None:
+    # check if the arguments are right
     try:
         if len(sys.argv) != 2:
             print("Usage: python3 a_maze_ing.py config.txt")
@@ -13,23 +13,28 @@ if __name__ == "__main__":
         file_name = sys.argv[1]
         if not file_name.lower().endswith(".txt"):
             raise ConfigError("file_name must end with .txt")
-        # get main vars
+        # get the configs from the config file
         config = parse_config(file_name)
-        WIDTH = config.width
-        HEIGHT = config.height
-        ENTRY = config.entry
-        EXIT = config.exit_
-        PERFECT = config.perfect
-        SEED = config.seed
+        width = config.width
+        height = config.height
+        entry = config.entry
+        exit_ = config.exit_
+        perfect = config.perfect
+        seed = config.seed
+        # !! don't forget the output file brother
         output_file = config.output_file
-        # assign additional vars
+        algo = config.algorithm
+        # assign the needed additional vars
         add_vars = ADDI(False, False, False, False)
-        maze = PRIM(WIDTH, HEIGHT, SEED, PERFECT)
-        safe = set_42_limits(WIDTH, HEIGHT)
-        solution = bfs(maze, ENTRY, EXIT)
-        # convert the solution from string to cords
-        path = path_to_cells(ENTRY, solution)
+        safe = set_42_limits(width, height)
+        # call the MazeGenerator
+        generator = MazeGenerator(width, height, seed, perfect, algo)
+        # generate the maze and solve it
+        maze = generator.generate()
+        path = generator.solve(entry, exit_)
+        # print the maze
         print_ascii_maze(maze, safe, add_vars, config, path)
+        # the menu
         while True:
             print("\n=== Main Menu ===")
             print("1. Re-generate a new maze")
@@ -42,14 +47,15 @@ if __name__ == "__main__":
             try:
                 choice = input("Enter your choice (1-6): ").strip()
             except BaseException:
-                print("\nDetected Key Enterruption Exiting gracefully...")
-                exit(0)
+                print("\nDetected Key Interruption Exiting gracefully...")
+                sys.exit(0)
 
             if choice == "1":
                 print("Maze re-generation started...")
-                maze = PRIM(WIDTH, HEIGHT, None, PERFECT)
-                solution = bfs(maze, ENTRY, EXIT)
-                path = path_to_cells(ENTRY, solution)
+                # give the seed NOne so it generate new random one
+                generator.seed = None
+                maze = generator.generate()
+                path = generator.solve(entry, exit_)
                 print_ascii_maze(maze, safe, add_vars, config, path)
             elif choice == "2":
                 add_vars.path_check = not add_vars.path_check
@@ -59,10 +65,12 @@ if __name__ == "__main__":
                 print_ascii_maze(maze, safe, add_vars, config, path)
             elif choice == "4":
                 add_vars.path_check = False
-                animate_path_walk(maze, safe, add_vars, config, path, delay=0.3)
+                animate_path_walk(maze, safe, add_vars,
+                                  config, path, delay=0.3)
             elif choice == "5":
                 add_vars.color_check = True
                 add_vars.color_42_check = True
+                add_vars.animation_check = True
                 print_ascii_maze(maze, safe, add_vars, config, path)
             elif choice == "6":
                 print("Goodbye!")
@@ -71,3 +79,7 @@ if __name__ == "__main__":
                 print("Invalid choice. Try again.")
     except Exception as e:
         print(e)
+
+
+if __name__ == "__main__":
+    main()

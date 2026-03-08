@@ -15,6 +15,7 @@ class ADDI:
     color_42_check: bool
     animation_check: bool
 
+
 # each bit position
 NORTH = 0
 EAST = 1
@@ -36,6 +37,7 @@ CYAN_CODE = "\033[36m"
 
 colors = [RED_CODE, GREEN_CODE, BLUE_CODE,
           YELLOW_CODE, WHITE_CODE, MAGENTA_CODE, CYAN_CODE]
+
 
 def possible_corners(n: bool, e: bool, s: bool, w: bool) -> str:
     # return the right corner from the possible combination of corners
@@ -62,6 +64,7 @@ def possible_corners(n: bool, e: bool, s: bool, w: bool) -> str:
     if w or e:
         return "━"
     return " "
+
 
 def hor_wall(grid: list[list[int]], r: int, c: int, direction: int) -> bool:
     # function to check the horizontal walls north and south
@@ -201,7 +204,7 @@ def animate_path_walk(
     # ANSI helpers
     # special characters that help move the cursor in the terminal
     # without printing anything
-    # 
+
     def move_up(n: int):
         # move the cursor up n lines
         print(f"\033[{n}A", end="")

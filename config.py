@@ -15,6 +15,7 @@ class Config:
     output_file: str
     perfect: bool
     seed: Optional[int] = None
+    algorithm: Optional[str] = "PRIM"
 
 
 class ConfigError(Exception):
@@ -143,13 +144,19 @@ def parse_config(file_name: str) -> Config:
     if not output_file.lower().endswith(".txt"):
         raise ConfigError("OUTPUT_FILE must end with .txt")
 
-    seed: Optional[int] = None
+    seed = None
     if "seed" in confs:
         try:
             seed = int(confs["seed"])
         except ValueError:
             raise ConfigError("SEED must be an integer")
 
+    algorithm = "PRIM"
+    if "algorithm" in confs:
+        algos = ["PRIM", "DFS"]
+        algorithm = confs["algorithm"].upper()
+        if algorithm not in algos:
+            raise ConfigError("algorithme choice is not valid")
     return Config(
         width=width,
         height=height,
@@ -158,4 +165,5 @@ def parse_config(file_name: str) -> Config:
         output_file=output_file,
         perfect=perfect,
         seed=seed,
+        algorithm=algorithm
     )
