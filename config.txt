@@ -26,4 +26,4 @@ SEED=42
 # Maze generation algorithm
 # the used algorithmes are : DFS, PRIM
 # if not giving prim will be used by Default
-ALGORITHM=prim
+ALGORITHM=dfs
