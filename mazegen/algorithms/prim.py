@@ -4,6 +4,7 @@ Prim's Algorithm - Maze Generator for A-Maze-ing (42 project)
 """
 import random
 from typing import Optional
+from config import set_42_limits
 
 # --- Direction constants ---
 NORTH = 0  # bit 0 → value 1
@@ -18,30 +19,6 @@ OPPOSITE = {NORTH: SOUTH, SOUTH: NORTH, EAST: WEST, WEST: EAST}
 
 # Derived for each direction
 CHANGES = {NORTH: (-1, 0), EAST: (0, 1), SOUTH: (1, 0), WEST: (0, -1)}
-
-
-# Set 42 limits
-def set_42_limits(width: int, height: int) -> list[tuple[int, int]]:
-    """Return coordinates forming the 42 pattern in the maze."""
-    center_r = int(height / 2)
-    center_c = int(width / 2)
-
-    # The cells that can build together a 42 pattern
-    coords_fc: list[tuple[int, int]] = [
-        (0, -1), (0, -2), (0, -3), (-1, -3),
-        (-2, -3), (1, -1), (2, -1), (0, 1),
-        (1, 1), (2, 1), (2, 2), (2, 3),
-        (0, 2), (0, 3), (-1, 3), (-2, 3),
-        (-2, 2), (-2, 1)
-    ]
-
-    form_42: list[tuple[int, int]] = []
-
-    for dr, dc in coords_fc:
-        target_r, target_c = center_r + dr, center_c + dc
-        form_42.append((target_r, target_c))
-
-    return form_42
 
 
 def prim(

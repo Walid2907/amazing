@@ -40,13 +40,17 @@ lint-strict:
 	$(PYTHON) -m flake8 .
 	$(PYTHON) -m mypy . --strict
 
+build:
+	$(PYTHON) -m pip install --quiet --upgrade build
+	$(PYTHON) -m build
+	cp dist/mazegen-*.whl . 2>/dev/null || true
+	cp dist/mazegen-*.tar.gz . 2>/dev/null || true
 # Clean python cache files
 clean:
 	find . -type d -name "__pycache__" -exec rm -r {} +
 	find . -type d -name ".mypy_cache" -exec rm -r {} +
 	find . -type f -name "*.pyc" -delete
+	find . -type d -name "*.egg-info" -exec rm -r {} +
+	rm -rf dist/ build/
 
-# Rebuild everything
-re: clean
-
-.PHONY: all install run debug lint lint-strict clean re
+.PHONY: all install run debug lint lint-strict clean build

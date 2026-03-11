@@ -21,6 +21,7 @@ def organize_output_file(
                                f"Choose an option: ").strip()
             except BaseException:
                 print("\nDetected Key Interruption Exiting gracefully...")
+                return False
             if choice == '1':
                 break
             elif choice == '2':
@@ -42,14 +43,18 @@ def organize_output_file(
             file.write(f"\n{entry[0]},{entry[1]}\n")
             file.write(f"{exit_[0]},{exit_[1]}\n")
             file.write(path)
+            file.write("\n")
 
     except PermissionError:
         print(f"You don't have permission to write to {output_file}")
+        return False
     except IsADirectoryError:
         print(f"{output_file} is a directory.")
+        return False
     except OSError as e:
         print(f"An unexpected operating system error occurred "
               f"while writing to {output_file}: {e}")
+        return False
     return True
 
 

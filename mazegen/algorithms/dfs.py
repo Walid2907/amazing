@@ -1,5 +1,6 @@
 import random
 from typing import Optional
+from config import set_42_limits
 
 NORTH = 0
 EAST = 1
@@ -24,23 +25,6 @@ CHANGES = {
     SOUTH: (1, 0),
     WEST:  (0, -1),
 }
-
-
-def set_42_limits(width: int, height: int) -> list[tuple[int, int]]:
-    center_r = int(height / 2)
-    center_c = int(width / 2)
-    coords_fc: list[tuple[int, int]] = [
-        (0, -1), (0, -2), (0, -3), (-1, -3),
-        (-2, -3), (1, -1), (2, -1), (0, 1),
-        (1, 1), (2, 1), (2, 2), (2, 3),
-        (0, 2), (0, 3), (-1, 3), (-2, 3),
-        (-2, 2), (-2, 1),
-    ]
-    form_42: list[tuple[int, int]] = []
-    for dr, dc in coords_fc:
-        form_42.append((center_r + dr, center_c + dc))
-    return form_42
-
 
 def random_opens(grid: list[list[int]], width: int,
                  height: int, rng: random.Random,
