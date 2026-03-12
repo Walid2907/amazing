@@ -138,7 +138,7 @@ def main() -> None:
                 break
             else:
                 print("Invalid choice. Try again.")
-    except Exception as e:
+    except BaseException as e:
         print(e)
 
 

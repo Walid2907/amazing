@@ -130,55 +130,56 @@ def print_ascii_maze(grid: list[list[int]], safe: list[tuple[int, int]],
     color = random.choice(colors) if add_vars.color_check else WHITE_CODE
     color_42 = random.choice(colors) if add_vars.color_42_check else WHITE_CODE
     os.system('cls' if os.name == 'nt' else 'clear')
+    try:
 
-    for r in range(height):
-        # Top edge of row
-        top = ""
+        for r in range(height):
+            # Top edge of row
+            top = ""
+            for c in range(width):
+                top += get_corner(grid, r, c)
+                top += "━━" if hor_wall(grid, r, c, NORTH) else "  "
+
+            # Top-rightmost corner of the row
+            n = vert_wall(grid, r - 1, width - 1, EAST)
+            s = vert_wall(grid, r, width - 1, EAST)
+            w = hor_wall(grid, r, width - 1, NORTH)
+            top += possible_corners(n, False, s, w)
+
+            print(color + top)
+            if add_vars.animation_check:
+                time.sleep(0.05)
+            # Middle of row
+            mid = ""
+            for c in range(width):
+                mid += "┃" if vert_wall(grid, r, c, WEST) else " "
+                if (r, c) in path_set and add_vars.path_check:
+                    mid += "🕷️ "       # path marker, 2 chars wide
+                elif (c, r) == config.entry:
+                    mid += GREEN_CODE + "██" + color
+                elif (c, r) == config.exit_:
+                    mid += RED_CODE + "██" + color
+                elif (r, c) in safe:
+                    mid += color_42 + "██" + color  # safe zone, 2 chars wide
+                else:
+                    mid += "  "       # empty cell, 2 chars wide
+
+            mid += "┃" if vert_wall(grid, r, width - 1, EAST) else " "
+            print(mid)
+            if add_vars.animation_check:
+                time.sleep(0.05)
+        # Bottom edge of the maze
+        bottom = ""
         for c in range(width):
-            top += get_corner(grid, r, c)
-            top += "━━" if hor_wall(grid, r, c, NORTH) else "  "
-
-        # Top-rightmost corner of the row
-        n = vert_wall(grid, r - 1, width - 1, EAST)
-        s = vert_wall(grid, r, width - 1, EAST)
-        w = hor_wall(grid, r, width - 1, NORTH)
-        top += possible_corners(n, False, s, w)
-
-        print(color + top)
-        if add_vars.animation_check:
-            time.sleep(0.05)
-        # Middle of row
-        mid = ""
-        for c in range(width):
-            mid += "┃" if vert_wall(grid, r, c, WEST) else " "
-            if (r, c) in path_set and add_vars.path_check:
-                mid += "🕷️ "       # path marker, 2 chars wide
-            elif (c, r) == config.entry:
-                mid += GREEN_CODE + "██" + color
-            elif (c, r) == config.exit_:
-                mid += RED_CODE + "██" + color
-            elif (r, c) in safe:
-                mid += color_42 + "██" + color       # safe zone, 2 chars wide
-            else:
-                mid += "  "       # empty cell, 2 chars wide
-
-        mid += "┃" if vert_wall(grid, r, width - 1, EAST) else " "
-        print(mid)
-        if add_vars.animation_check:
-            time.sleep(0.05)
-
-    # Bottom edge of the maze
-    bottom = ""
-    for c in range(width):
-        bottom += get_bottom_corner(grid, height - 1, c)
-        bottom += "━━" if hor_wall(grid, height - 1, c, SOUTH) else "  "
-
-    # Bottom-rightmost corner
-    n = vert_wall(grid, height - 1, width - 1, EAST)
-    w = hor_wall(grid, height - 1, width - 1, SOUTH)
-    bottom += possible_corners(n, False, False, w)
-
-    print(bottom + RESET_CODE)
+            bottom += get_bottom_corner(grid, height - 1, c)
+            bottom += "━━" if hor_wall(grid, height - 1, c, SOUTH) else "  "
+        # Bottom-rightmost corner
+        n = vert_wall(grid, height - 1, width - 1, EAST)
+        w = hor_wall(grid, height - 1, width - 1, SOUTH)
+        bottom += possible_corners(n, False, False, w)
+        print(bottom + RESET_CODE)
+    except KeyboardInterrupt:
+        print(RESET_CODE)  # Reset the colors
+        print("\nAnimation interrupted.")
 
 
 def animate_path_walk(
@@ -238,10 +239,13 @@ def animate_path_walk(
 
     footprint = "🕸️ "
     spider = "🕷️ "
-
-    for i, cell in enumerate(path):
-        if i > 0:
-            overwrite_cell(path[i - 1][0],
-                           path[i - 1][1], footprint, CYAN_CODE)
-        overwrite_cell(cell[0], cell[1], spider)
-        time.sleep(delay)
+    try:
+        for i, cell in enumerate(path):
+            if i > 0:
+                overwrite_cell(path[i - 1][0],
+                               path[i - 1][1], footprint, CYAN_CODE)
+            overwrite_cell(cell[0], cell[1], spider)
+            time.sleep(delay)
+    except KeyboardInterrupt:
+        print(RESET_CODE)  # Reset the colors
+        print("\nAnimation interrupted.")

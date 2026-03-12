@@ -26,6 +26,7 @@ CHANGES = {
     WEST:  (0, -1),
 }
 
+
 def random_opens(grid: list[list[int]], width: int,
                  height: int, rng: random.Random,
                  form_42: list[tuple[int, int]],
