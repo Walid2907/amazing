@@ -8,7 +8,7 @@ required to be perfect.
 
 import random
 from typing import Optional
-from config import set_42_limits
+from ..utils import set_42_limits
 
 # --- Direction constants ---
 NORTH = 0  # bit 0 → value 1

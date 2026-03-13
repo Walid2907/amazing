@@ -1,6 +1,7 @@
 import sys
 import os
-from config import parse_config, ConfigError, set_42_limits
+from config import parse_config, ConfigError
+from mazegen.utils import set_42_limits
 from mazegen import MazeGenerator, bfs
 from display import print_ascii_maze, ADDI, animate_path_walk
 
@@ -76,7 +77,7 @@ def main() -> None:
     try:
         if len(sys.argv) != 2:
             print("Usage: python3 a_maze_ing.py config.txt")
-            sys.exit(1)
+            sys.exit()
         file_name = sys.argv[1]
         if not file_name.lower().endswith(".txt"):
             raise ConfigError("file_name must end with .txt")

@@ -241,8 +241,7 @@ def print_ascii_maze(grid: list[list[int]], safe: list[tuple[int, int]],
         bottom += possible_corners(n, False, False, w)
         print(bottom + RESET_CODE)
     except KeyboardInterrupt:
-        print(RESET_CODE)
-        print("\nAnimation interrupted.")
+        raise KeyboardInterrupt("\nAnimation interrupted.")
 
 
 def animate_path_walk(
@@ -267,46 +266,46 @@ def animate_path_walk(
         path: Path coordinates to follow.
         delay: Delay in seconds between steps.
     """
-    height = len(grid)
-    total_lines = height * 2 + 1
-
-    # Draw the initial maze (no path)
-    add_vars.path_check = False
-    print_ascii_maze(grid, safe, add_vars, conf, [])
-    # ANSI helpers
-    # special characters that help move the cursor in the terminal
-    # without printing anything
-
-    def move_up(n: int) -> None:
-        # move the cursor up n lines
-        print(f"\033[{n}A", end="")
-
-    def move_to_col(n: int) -> None:
-        # Move terminal cursor to column n (1-indexed)
-        print(f"\033[{n}G", end="")
-
-    def overwrite_cell(r: int, c: int, symbol: str,
-                       color: str = WHITE_CODE) -> None:
-        """
-        Overwrite a cell at terminal coordinates (r,c).
-
-        Args:
-            r: Row index.
-            c: Column index.
-            symbol: Symbol to print.
-            color: ANSI color code.
-        """
-        line_from_bottom = total_lines - (r * 2 + 1)
-        move_up(line_from_bottom)
-        col_pos = c * 3 + 2
-        move_to_col(col_pos)
-        print(color + symbol + RESET_CODE, end="", flush=True)
-        print(f"\033[{line_from_bottom}B", end="", flush=True)
-        move_to_col(1)
-
-    footprint = "🕸️ "
-    spider = "🕷️ "
     try:
+        height = len(grid)
+        total_lines = height * 2 + 1
+
+        # Draw the initial maze (no path)
+        add_vars.path_check = False
+        print_ascii_maze(grid, safe, add_vars, conf, [])
+        # ANSI helpers
+        # special characters that help move the cursor in the terminal
+        # without printing anything
+
+        def move_up(n: int) -> None:
+            # move the cursor up n lines
+            print(f"\033[{n}A", end="")
+
+        def move_to_col(n: int) -> None:
+            # Move terminal cursor to column n (1-indexed)
+            print(f"\033[{n}G", end="")
+
+        def overwrite_cell(r: int, c: int, symbol: str,
+                           color: str = WHITE_CODE) -> None:
+            """
+            Overwrite a cell at terminal coordinates (r,c).
+
+            Args:
+                r: Row index.
+                c: Column index.
+                symbol: Symbol to print.
+                color: ANSI color code.
+            """
+            line_from_bottom = total_lines - (r * 2 + 1)
+            move_up(line_from_bottom)
+            col_pos = c * 3 + 2
+            move_to_col(col_pos)
+            print(color + symbol + RESET_CODE, end="", flush=True)
+            print(f"\033[{line_from_bottom}B", end="", flush=True)
+            move_to_col(1)
+
+        footprint = "🕸️ "
+        spider = "🕷️ "
         for i, cell in enumerate(path):
             if i > 0:
                 overwrite_cell(path[i - 1][0],
@@ -314,5 +313,4 @@ def animate_path_walk(
             overwrite_cell(cell[0], cell[1], spider)
             time.sleep(delay)
     except KeyboardInterrupt:
-        print(RESET_CODE)
-        print("\nAnimation interrupted.")
+        raise KeyboardInterrupt("\nAnimation interrupted.")

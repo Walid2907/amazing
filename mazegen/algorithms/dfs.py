@@ -8,7 +8,7 @@ when the maze is not required to be perfect.
 
 import random
 from typing import Optional
-from config import set_42_limits
+from ..utils import set_42_limits
 
 NORTH = 0
 EAST = 1
