@@ -6,8 +6,19 @@ from typing import Optional, Tuple
 
 @dataclass(frozen=True)
 class Config:
-    """Parsed configuration values."""
+    """
+    Immutable configuration object for the maze generator.
 
+    Attributes:
+        width: Width of the maze grid.
+        height: Height of the maze grid.
+        entry: Entry coordinate (x, y) of the maze.
+        exit_: Exit coordinate (x, y) of the maze.
+        output_file: Path of the file where the maze will be saved.
+        perfect: Whether the maze should be perfect (no loops).
+        seed: Optional seed used for deterministic maze generation.
+        algorithm: Maze generation algorithm to use.
+    """
     width: int
     height: int
     entry: Tuple[int, int]
@@ -19,11 +30,22 @@ class Config:
 
 
 class ConfigError(Exception):
-    """Configuration parsing or validation error."""
+    """Exception raised when configuration parsing or validation fails."""
 
 
 def set_42_limits(width: int, height: int) -> list[tuple[int, int]]:
-    """Return coordinates forming the 42 pattern in the maze."""
+    """
+    Compute the coordinates that form the '42' pattern inside the maze.
+
+    The pattern is centered relative to the maze dimensions.
+
+    Args:
+        width: Width of the maze.
+        height: Height of the maze.
+
+    Returns:
+        A list of coordinate tuples representing the '42' pattern cells.
+    """
     center_r = height // 2
     center_c = width // 2
 
@@ -50,13 +72,39 @@ def entry_exit_in_42(
     width: int,
     height: int,
 ) -> bool:
-    """Return True if entry or exit is in the 42 pattern."""
+    """
+    Check whether the entry or exit position lies within the '42' pattern.
+
+    Args:
+        entry: Entry coordinate (x, y).
+        exit_: Exit coordinate (x, y).
+        width: Maze width.
+        height: Maze height.
+
+    Returns:
+        True if either the entry or exit coordinate is inside the
+        '42' pattern, otherwise False.
+    """
     form_42 = set_42_limits(width, height)
     return entry in form_42 or exit_ in form_42
 
 
 def parse_bool(value: str, key_name: str) -> bool:
-    """Parse a boolean string value."""
+    """
+    Convert a string value to a boolean.
+
+    Accepted values are "true" or "false" (case-insensitive).
+
+    Args:
+        value: The string representation of the boolean.
+        key_name: Name of the configuration key for error reporting.
+
+    Returns:
+        The parsed boolean value.
+
+    Raises:
+        ConfigError: If the value is not a valid boolean string.
+    """
     v = value.strip().lower()
     if v == "true":
         return True
@@ -66,7 +114,19 @@ def parse_bool(value: str, key_name: str) -> bool:
 
 
 def parse_coord(value: str, key_name: str) -> Tuple[int, int]:
-    """Parse a coordinate in the format x,y."""
+    """
+    Parse a coordinate string in the format "x,y".
+
+    Args:
+        value: Coordinate string.
+        key_name: Configuration key name used for error reporting.
+
+    Returns:
+        A tuple containing two integers (x, y).
+
+    Raises:
+        ConfigError: If the value cannot be parsed as a valid coordinate.
+    """
     try:
         x, y = value.split(",", 1)
         return int(x.strip()), int(y.strip())
@@ -75,7 +135,24 @@ def parse_coord(value: str, key_name: str) -> Tuple[int, int]:
 
 
 def parse_config(file_name: str) -> Config:
-    """Parse the config file and return a Config object."""
+    """
+    Parse and validate a configuration file for the maze generator.
+
+    The configuration file must contain key-value pairs using the format:
+        KEY=value
+
+    Lines beginning with '#' and empty lines are ignored.
+
+    Args:
+        file_name: Path to the configuration file.
+
+    Returns:
+        A validated Config object.
+
+    Raises:
+        ConfigError: If the file cannot be read or if any configuration
+        value is missing or invalid.
+    """
     confs: dict[str, str] = {}
     required = {
         "width",

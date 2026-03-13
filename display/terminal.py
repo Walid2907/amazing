@@ -1,3 +1,12 @@
+"""
+ASCII maze display and animation utilities.
+
+This module provides functions to:
+- Print an ASCII maze with walls, safe zones, entry/exit points, and paths.
+- Animate a "spider" walking along a path in the maze.
+- Support optional colors and animation effects.
+"""
+
 from typing import Optional
 from dataclasses import dataclass
 import random
@@ -6,10 +15,9 @@ import time
 from config import Config
 
 
-# an additional data class
-# to hold more vars needed
 @dataclass
 class ADDI:
+    """Additional display variables for maze printing."""
     path_check: bool
     color_check: bool
     color_42_check: bool
@@ -40,7 +48,18 @@ colors = [RED_CODE, GREEN_CODE, BLUE_CODE,
 
 
 def possible_corners(n: bool, e: bool, s: bool, w: bool) -> str:
-    # return the right corner from the possible combination of corners
+    """
+    Determine the correct corner character based on surrounding walls.
+
+    Args:
+        n: Is there a wall to the north?
+        e: Is there a wall to the east?
+        s: Is there a wall to the south?
+        w: Is there a wall to the west?
+
+    Returns:
+        The Unicode character representing the corner or wall.
+    """
     if n and e and s and w:
         return "╋"
     if n and e and w:
@@ -67,7 +86,21 @@ def possible_corners(n: bool, e: bool, s: bool, w: bool) -> str:
 
 
 def hor_wall(grid: list[list[int]], r: int, c: int, direction: int) -> bool:
-    # function to check the horizontal walls north and south
+    """
+    Check if a horizontal wall exists at a cell in the north
+    or south direction.
+
+    Handles out-of-bounds cells safely.
+
+    Args:
+        grid: Maze grid.
+        r: Row index.
+        c: Column index.
+        direction: NORTH or SOUTH.
+
+    Returns:
+        True if a wall exists, False otherwise.
+    """
     height = len(grid)
     width = len(grid[0])
     if r < 0 or r >= height or c < 0 or c >= width:
@@ -83,7 +116,20 @@ def hor_wall(grid: list[list[int]], r: int, c: int, direction: int) -> bool:
 
 def vert_wall(grid: list[list[int]], r: int,
               c: int, direction: int) -> bool:
-    """Helper to safely check for a vertical wall."""
+    """
+    Check if a vertical wall exists at a cell in the east or west direction.
+
+    Handles out-of-bounds cells safely.
+
+    Args:
+        grid: Maze grid.
+        r: Row index.
+        c: Column index.
+        direction: EAST or WEST.
+
+    Returns:
+        True if a wall exists, False otherwise.
+    """
     height = len(grid)
     width = len(grid[0]) if height > 0 else 0
     if r < 0 or r >= height or c < 0 or c >= width:
@@ -97,8 +143,15 @@ def vert_wall(grid: list[list[int]], r: int,
 
 def get_corner(grid: list[list[int]], r: int, c: int) -> str:
     """
-    Determine the four wall and creat the corner to get the right
-    corner from the possibilities
+    Determine the corner character for a cell based on surrounding walls.
+
+    Args:
+        grid: Maze grid.
+        r: Row index.
+        c: Column index.
+
+    Returns:
+        The Unicode corner character.
     """
     n = vert_wall(grid, r - 1, c, WEST)  # vertical wall above
     s = vert_wall(grid, r, c, WEST)      # vertical wall below
@@ -108,7 +161,17 @@ def get_corner(grid: list[list[int]], r: int, c: int) -> str:
 
 
 def get_bottom_corner(grid: list[list[int]], r: int, c: int) -> str:
-    """Corner for the very bottom edge of the grid."""
+    """
+    Determine the corner character for the bottom edge of the grid.
+
+    Args:
+        grid: Maze grid.
+        r: Row index (bottom row).
+        c: Column index.
+
+    Returns:
+        The Unicode corner character.
+    """
     n = vert_wall(grid, r, c, WEST)      # vertical wall above
     s = False                            # no wall below bottom edge
     e = hor_wall(grid, r, c, SOUTH)     # horizontal wall right
@@ -144,24 +207,24 @@ def print_ascii_maze(grid: list[list[int]], safe: list[tuple[int, int]],
             s = vert_wall(grid, r, width - 1, EAST)
             w = hor_wall(grid, r, width - 1, NORTH)
             top += possible_corners(n, False, s, w)
-
             print(color + top)
             if add_vars.animation_check:
                 time.sleep(0.05)
+
             # Middle of row
             mid = ""
             for c in range(width):
                 mid += "┃" if vert_wall(grid, r, c, WEST) else " "
                 if (r, c) in path_set and add_vars.path_check:
-                    mid += "🕷️ "       # path marker, 2 chars wide
+                    mid += "🕷️ "
                 elif (c, r) == config.entry:
                     mid += GREEN_CODE + "██" + color
                 elif (c, r) == config.exit_:
                     mid += RED_CODE + "██" + color
                 elif (r, c) in safe:
-                    mid += color_42 + "██" + color  # safe zone, 2 chars wide
+                    mid += color_42 + "██" + color
                 else:
-                    mid += "  "       # empty cell, 2 chars wide
+                    mid += "  "
 
             mid += "┃" if vert_wall(grid, r, width - 1, EAST) else " "
             print(mid)
@@ -178,7 +241,7 @@ def print_ascii_maze(grid: list[list[int]], safe: list[tuple[int, int]],
         bottom += possible_corners(n, False, False, w)
         print(bottom + RESET_CODE)
     except KeyboardInterrupt:
-        print(RESET_CODE)  # Reset the colors
+        print(RESET_CODE)
         print("\nAnimation interrupted.")
 
 
@@ -191,10 +254,18 @@ def animate_path_walk(
     delay: float = 0.1
 ) -> None:
     """
-    Animate a spider walking the path.
-    the spider will moves cell by cell,
-    leaving 🕸️ on visited cells.
-    !! remembre takes 2 space
+    Animate a "spider" walking the path.
+
+    Each cell the spider visits is updated in the terminal using ANSI codes.
+    Visited cells leave a footprint.
+
+    Args:
+        grid: Maze grid.
+        safe: List of protected coordinates (42 pattern).
+        add_vars: Display flags.
+        conf: Maze configuration.
+        path: Path coordinates to follow.
+        delay: Delay in seconds between steps.
     """
     height = len(grid)
     total_lines = height * 2 + 1
@@ -211,29 +282,25 @@ def animate_path_walk(
         print(f"\033[{n}A", end="")
 
     def move_to_col(n: int) -> None:
+        # Move terminal cursor to column n (1-indexed)
         print(f"\033[{n}G", end="")
 
     def overwrite_cell(r: int, c: int, symbol: str,
                        color: str = WHITE_CODE) -> None:
         """
-        Jump to the exact terminal position of cell (r,c)
-        and overwrite its content.
-        Each cell occupies columns: corner(1) + 2 chars per cell.
-        The 'middle' line of row r is at line offset:
-        r*2 + 1 (0-indexed from maze top).
+        Overwrite a cell at terminal coordinates (r,c).
+
+        Args:
+            r: Row index.
+            c: Column index.
+            symbol: Symbol to print.
+            color: ANSI color code.
         """
-        # Move cursor up from current bottom position to the cell's mid-line
         line_from_bottom = total_lines - (r * 2 + 1)
         move_up(line_from_bottom)
-
-        # Column: each cell is 3 chars wide (1 wall + 2 content),
-        # 1-indexed for ANSI
-        col_pos = c * 3 + 2  # +1 for ANSI 1-index, +1 to skip the wall char
+        col_pos = c * 3 + 2
         move_to_col(col_pos)
-
         print(color + symbol + RESET_CODE, end="", flush=True)
-
-        # Move back down to bottom
         print(f"\033[{line_from_bottom}B", end="", flush=True)
         move_to_col(1)
 
@@ -247,5 +314,5 @@ def animate_path_walk(
             overwrite_cell(cell[0], cell[1], spider)
             time.sleep(delay)
     except KeyboardInterrupt:
-        print(RESET_CODE)  # Reset the colors
+        print(RESET_CODE)
         print("\nAnimation interrupted.")

@@ -1,3 +1,11 @@
+"""
+DFS maze generator and random wall carving utilities.
+
+This module provides a maze generator based on the Depth-First Search
+(backtracking) algorithm and a helper function used to introduce loops
+when the maze is not required to be perfect.
+"""
+
 import random
 from typing import Optional
 from config import set_42_limits
@@ -31,10 +39,32 @@ def random_opens(grid: list[list[int]], width: int,
                  height: int, rng: random.Random,
                  form_42: list[tuple[int, int]],
                  carve_chance: float = 0.1) -> None:
+    """
+    Randomly open additional walls to create loops in the maze.
 
+    After carving extra passages, the function restores the "42" pattern
+    to ensure it remains fully sealed.
+
+    Args:
+        grid: Maze grid.
+        width: Maze width.
+        height: Maze height.
+        rng: Random number generator.
+        form_42: Coordinates of the protected "42" pattern.
+        carve_chance: Probability of removing a wall.
+    """
     def enforce_42(grid_: list[list[int]],
                    form_42_: list[tuple[int, int]],
                    width_: int, height_: int) -> None:
+        """
+        Restore the walls of the 42 pattern.
+
+        Args:
+            grid_: Maze grid.
+            form_42_: Coordinates forming the 42 pattern.
+            width_: Maze width.
+            height_: Maze height.
+        """
         for rw, cw in form_42_:
             grid_[rw][cw] |= 0xF
         for row, col in form_42_:
@@ -67,7 +97,18 @@ def random_opens(grid: list[list[int]], width: int,
 
 def dfs(width: int, height: int, seed: Optional[int] = None,
         perfect: bool = True) -> list[list[int]]:
+    """
+    Generate a maze using a DFS backtracking algorithm.
 
+    Args:
+        width: Maze width.
+        height: Maze height.
+        seed: Optional random seed.
+        perfect: If True, produce a perfect maze (no loops).
+
+    Returns:
+        A 2D maze grid where each cell stores wall bit flags.
+    """
     form_42 = set_42_limits(width, height)
     form_42_set = set(form_42)
     rng = random.Random(seed)
@@ -80,9 +121,25 @@ def dfs(width: int, height: int, seed: Optional[int] = None,
             visited[r42][c42] = True
 
     def in_bounds(r: int, c: int) -> bool:
+        """
+        Checks if the cell still in the height, width limits and not
+        out of borders
+        Args:
+            r: the row
+            c: the coll
+        Return True if the coordinates are inside the maze.
+        """
         return 0 <= r < height and 0 <= c < width
 
     def remove_wall(r1: int, c1: int, direction: int) -> None:
+        """
+        Remove the wall between two neighboring cells.
+
+        Args:
+            r1: Source row.
+            c1: Source column.
+            direction: Direction toward the neighbor.
+        """
         dr, dc = CHANGES[direction]
         r2, c2 = r1 + dr, c1 + dc
         if (r1, c1) in form_42_set or (r2, c2) in form_42_set:
@@ -91,6 +148,13 @@ def dfs(width: int, height: int, seed: Optional[int] = None,
         grid[r2][c2] &= ~WALL_BITS[OPPOSITE[direction]]
 
     def dfs_helper(start_r: int, start_c: int) -> None:
+        """
+        Iterative DFS maze carving starting from a cell.
+
+        Args:
+            start_r: The start row
+            start_c: The start coll
+        """
         stack = [(start_r, start_c)]
         visited[start_r][start_c] = True
         while stack:

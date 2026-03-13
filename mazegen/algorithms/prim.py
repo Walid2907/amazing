@@ -1,7 +1,11 @@
 """
-Prim's Algorithm - Maze Generator for A-Maze-ing (42 project)
-==============================================================
+Prim's algorithm maze generator used in the A-Maze-ing project.
+
+This module generates a maze using a randomized version of Prim's
+algorithm and optionally introduces loops when the maze is not
+required to be perfect.
 """
+
 import random
 from typing import Optional
 from config import set_42_limits
@@ -17,7 +21,7 @@ WALL_BITS = {NORTH: 1, EAST: 2, SOUTH: 4, WEST: 8}
 # Opposite direction
 OPPOSITE = {NORTH: SOUTH, SOUTH: NORTH, EAST: WEST, WEST: EAST}
 
-# Derived for each direction
+# Row/column changes for each direction
 CHANGES = {NORTH: (-1, 0), EAST: (0, 1), SOUTH: (1, 0), WEST: (0, -1)}
 
 
@@ -28,10 +32,21 @@ def prim(
     perfect: bool = True,
 ) -> list[list[int]]:
     """
-    Generate the maze using Prim's algorithm:
-    - Start with one random cell fully walled
-    - Pick random walls and remove them to connect to unvisited cells
-    - Continue until no walls remain in the frontier
+    Generate a maze using Prim's algorithm.
+
+    The algorithm starts with a random cell, then repeatedly removes
+    walls between visited and unvisited cells until all reachable
+    cells are connected.
+
+    Args:
+        width: Maze width.
+        height: Maze height.
+        seed: Optional random seed for deterministic generation.
+        perfect: If True, generate a perfect maze (no loops).
+
+    Returns:
+        A 2D grid representing the maze. Each cell contains bit flags
+        describing which walls remain.
     """
     form_42 = set_42_limits(width, height)
     rng = random.Random(seed)
@@ -41,13 +56,22 @@ def prim(
     visited: list[list[bool]] = [[False] * width for _ in range(height)]
 
     def in_bounds(r: int, c: int) -> bool:
-        """Return True if (r, c) is inside the grid."""
+        """
+        Args:
+            r: row coordinate
+            c: coll coordinate
+        Return True if the cell (r, c) is inside the maze grid.
+        """
         return 0 <= r < height and 0 <= c < width
 
     def remove_wall(r1: int, c1: int, direction: int) -> None:
         """
-        Remove the wall between cell (r1, c1) and its neighbor in `direction`.
-        Updates both cells to keep wall data coherent (subject rule).
+        Remove the wall between a cell and its neighbor.
+
+        Args:
+            r1: Row of the source cell.
+            c1: Column of the source cell.
+            direction: Direction of the neighbor cell.
         """
         dr, dc = CHANGES[direction]
         r2, c2 = r1 + dr, c1 + dc
@@ -87,8 +111,6 @@ def prim(
                 if (in_bounds(nr, nc) and not visited[nr][nc]
                         and (nr, nc) not in form_42):
                     frontier.append((r2, c2, new_direction))
-
-    # Optionally carve extra passages to create loops
     if not perfect:
         random_opens(grid, width, height, rng, form_42)
 
@@ -105,52 +127,58 @@ def random_opens(
     carve_chance: float = 0.1
 ) -> None:
     """
-    Open more random walls using a random generator,
-    and reclose the 42 pattern after the random opens.
+    Randomly remove additional walls to create loops.
+
+    After random carving, the function restores the "42" pattern
+    to ensure it remains completely sealed.
+
+    Args:
+        grid: Maze grid.
+        width: Maze width.
+        height: Maze height.
+        rng: Random generator instance.
+        form_42: Coordinates representing the 42 pattern.
+        carve_chance: Probability of removing a wall.
     """
 
     def enforce_42(grid_: list[list[int]],
                    form_42_: list[tuple[int, int]],
                    width: int, height: int) -> None:
-        """Restore walls for the 42 pattern and
-        seal neighbors facing into it."""
+        """
+        Ensures that the pattern cells remain sealed and
+        neighboring cells cannot open passages into it.
+        Restore the walls of the 42 pattern if carved by accedents
+        Args:
+            grid_ : the grid (Generated Maze)
+            form_42_ : The 42 pattern cells coordinates
+            width_ : Width of the maze
+            height_: height of the maze
 
-        # Step 1: fully wall every 42 cell
+        """
         for rw, coll in form_42_:
             grid_[rw][coll] |= 0xF
 
-        # Step 2: close the wall on
-        # each neighbor that faces a 42 cell
         for row, coll in form_42_:
             neighbors = [
                 (row - 1, coll, NORTH),
-                # neighbor to the north looks SOUTH into 42
                 (row, coll + 1, EAST),
-                # neighbor to the east  looks WEST  into 42
                 (row + 1, coll, SOUTH),
-                # neighbor to the south looks NORTH into 42
                 (row, coll - 1, WEST),
-                # neighbor to the west  looks EAST  into 42
             ]
             for nr, nc, direction in neighbors:
-                # bounds check: skip if neighbor is outside the grid
                 if not (0 <= nr < height and 0 <= nc < width):
                     continue
-                # skip if the neighbor is itself a 42 cell
                 if (nr, nc) in form_42_:
                     continue
-                # close the wall on the neighbor's side that faces the 42 cell
                 grid_[nr][nc] |= WALL_BITS[OPPOSITE[direction]]
 
     for r in range(height):
         for c in range(width):
-            # Try removing East wall (avoid right border)
             if c < width - 1 and rng.random() < carve_chance:
                 if grid[r][c] & WALL_BITS[EAST]:
                     grid[r][c] &= ~WALL_BITS[EAST]
                     grid[r][c + 1] &= ~WALL_BITS[WEST]
 
-            # Try removing South wall (avoid bottom border)
             if r < height - 1 and rng.random() < carve_chance:
                 if grid[r][c] & WALL_BITS[SOUTH]:
                     grid[r][c] &= ~WALL_BITS[SOUTH]

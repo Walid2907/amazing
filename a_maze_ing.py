@@ -12,6 +12,18 @@ def organize_output_file(
     entry: tuple[int, int],
     exit_: tuple[int, int],
 ) -> bool:
+    """Write the maze and metadata to the output file.
+
+    Args:
+        grid: Generated maze grid.
+        output_file: Path of the file where the maze will be written.
+        path: Path from entry to exit encoded as a string.
+        entry: Entry coordinate.
+        exit_: Exit coordinate.
+
+    Returns:
+        True if the file was successfully written, False otherwise.
+    """
     if os.path.exists(output_file):
         while True:
             print("1. to overwrite the content of the file")
@@ -59,6 +71,7 @@ def organize_output_file(
 
 
 def main() -> None:
+    """Main entry point of the maze generator program."""
     # check if the arguments are right
     try:
         if len(sys.argv) != 2:
@@ -87,12 +100,12 @@ def main() -> None:
         path_out_list = bfs(maze, entry, exit_)
         if path_out_list is None:
             print("no path found")
-            sys.exit(0)
+            sys.exit()
         path = generator.solve(entry, exit_)
         # write to output file
         if organize_output_file(maze, output_file, "".join(path_out_list),
                                 entry, exit_) is False:
-            sys.exit(0)
+            sys.exit()
         # print the maze
         print_ascii_maze(maze, safe, add_vars, config, path)
         # the menu
@@ -109,7 +122,7 @@ def main() -> None:
                 choice = input("Enter your choice (1-6): ").strip()
             except BaseException:
                 print("\nDetected Key Interruption Exiting gracefully...")
-                sys.exit(0)
+                sys.exit()
 
             if choice == "1":
                 print("Maze re-generation started...")
